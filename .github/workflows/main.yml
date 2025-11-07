@@ -1,0 +1,60 @@
+name: "Deploy to mater or main"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      - name: Test SSH access
+        uses: appleboy/ssh-action@v1
+        with:
+          port: 22
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            whoami
+            pwd
+            mkdir ~/test-frontend-temp
+            echo "Test folder created. Now removing it..."
+            rm -rf ~/test-frontend-temp
+            echo "Test folder removed."
+
+      - name: Copy files via SCP
+        uses: appleboy/scp-action@v1
+        with:
+          port: 22
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          source: "."
+          target: "node-vps"
+
+      - name: Run remote SSH commands
+        uses: appleboy/ssh-action@v1
+        with:
+          port: 22
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          script: |
+            export NVM_DIR="$HOME/.nvm"
+            source "$NVM_DIR/nvm.sh"
+            cd /root/${{ secrets.SSH_USERNAME }}/node-vps/
+            echo "Installing dependencies..."
+            npm install
+            echo "Make build"
+            docker compose up -d --build
+            echo "Server started successfully."
