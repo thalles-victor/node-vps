@@ -52,9 +52,19 @@ jobs:
           script: |
             export NVM_DIR="$HOME/.nvm"
             source "$NVM_DIR/nvm.sh"
+
             cd /root/${{ secrets.SSH_USERNAME }}/node-vps/
-            echo "Installing dependencies..."
-            npm install
-            echo "Make build"
+
+            echo "Stopping and removing old containers..."
+            docker compose down
+
+            echo "Removing old images..."
+            docker image prune -af
+
+            echo "Building and starting new containers..."
             docker compose up -d --build
-            echo "Server started successfully."
+
+            echo "Cleaning unused resources..."
+            docker system prune -af
+
+            echo "✅ Server rebuilt and started successfully!"
