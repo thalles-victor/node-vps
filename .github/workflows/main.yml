@@ -55,16 +55,19 @@ jobs:
 
             cd /root/node-vps/
 
-            # echo "Stopping and removing old containers..."
-            # docker compose down
+            echo "Stopping and removing old containers..."
+            docker compose down
 
-            # echo "Removing old images..."
-            # docker image prune -af
+            echo "Run build"
+            npm run build
+
+            echo "Removing old images..."
+            docker image prune -af
 
             echo "Building and starting new containers..."
             docker compose up -d --build
 
-            # echo "Cleaning unused resources..."
-            # docker system prune -af
+            echo "Cleaning unused resources..."
+            docker system prune -af
 
             echo "✅ Server rebuilt and started successfully!"
