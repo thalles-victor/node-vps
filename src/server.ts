@@ -35,8 +35,8 @@ app.get("/", (req, res) => {
     </head>
     <body>
       <div class="card">
-        <h1>🚀 Servidor Online!</h1>
-        <p>Seu servidor está rodando perfeitamente!</p>
+        <h1>🚀 A melhor Bet!</h1>
+        <p>Perca 100% garantida!</p>
       </div>
     </body>
     </html>
